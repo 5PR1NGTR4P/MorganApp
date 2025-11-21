@@ -1,4 +1,5 @@
 import 'package:abejajaja/dashboard.dart';
+import 'package:abejajaja/detalle_colmena.dart';
 import 'package:flutter/material.dart';
 
 class ColmenasPage extends StatelessWidget {
@@ -55,24 +56,28 @@ class ColmenasPage extends StatelessWidget {
               child: ListView(
                 children: [
                   _buildHiveCard(
+                    context,
                     number: "Colmena #1",
                     status: "Saludable",
                     lastReview: "Hace 5 días",
                     color: Colors.green,
                   ),
                   _buildHiveCard(
+                    context,
                     number: "Colmena #2",
                     status: "En revisión",
                     lastReview: "Ayer",
                     color: Colors.amber,
                   ),
                   _buildHiveCard(
+                    context,
                     number: "Colmena #3",
                     status: "Problema detectado",
                     lastReview: "Hace 10 días",
                     color: Colors.red,
                   ),
                   _buildHiveCard(
+                    context,
                     number: "Colmena #4",
                     status: "Tratamiento activo",
                     lastReview: "Hoy",
@@ -131,7 +136,8 @@ class ColmenasPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHiveCard({
+  Widget _buildHiveCard(
+    BuildContext context, {
     required String number,
     required String status,
     required String lastReview,
@@ -164,6 +170,18 @@ class ColmenasPage extends StatelessWidget {
           ],
         ),
         trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetalleColmenaPage(
+                colmenaId: number,
+                status: status,
+                statusColor: color,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

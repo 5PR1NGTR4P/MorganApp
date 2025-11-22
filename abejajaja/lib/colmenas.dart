@@ -1,6 +1,9 @@
 import 'package:abejajaja/dashboard.dart';
 import 'package:abejajaja/detalle_colmena.dart';
 import 'package:flutter/material.dart';
+import 'package:abejajaja/tratamiento.dart';
+import 'package:abejajaja/cosecha.dart';
+
 
 class ColmenasPage extends StatelessWidget {
   const ColmenasPage({super.key});
@@ -24,7 +27,7 @@ class ColmenasPage extends StatelessWidget {
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[700],
-        onPressed: null, // sin funcionalidad
+        onPressed: null, // Lógica para agregar nueva colmena
         child: const Icon(Icons.add),
       ),
 
@@ -40,21 +43,22 @@ class ColmenasPage extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  _buildFilterChip("Todas", true),
-                  _buildFilterChip("Activas", false),
-                  _buildFilterChip("En revisión", false),
-                  _buildFilterChip("Con problemas", false),
-                  _buildFilterChip("Tratamientos", false),
+                  _construirFiltroChip("Todas", true),
+                  _construirFiltroChip("Activas", false),
+                  _construirFiltroChip("En revisión", false),
+                  _construirFiltroChip("Con problemas", false),
+                  _construirFiltroChip("Tratamientos", false),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // ---- Lista de colmenas ----
+            // ---- Lista de colmenas  ----
             Expanded(
               child: ListView(
                 children: [
+<<<<<<< HEAD
                   _buildHiveCard(
                     context,
                     number: "Colmena #1",
@@ -81,6 +85,34 @@ class ColmenasPage extends StatelessWidget {
                     number: "Colmena #4",
                     status: "Tratamiento activo",
                     lastReview: "Hoy",
+=======
+                  _construirTarjetaColmena(
+                    context: context,
+                    numero: "Colmena #1",
+                    estado: "Saludable",
+                    ultimaRevision: "Hace 5 días",
+                    color: Colors.green,
+                  ),
+                  _construirTarjetaColmena(
+                    context: context,
+                    numero: "Colmena #2",
+                    estado: "En revisión",
+                    ultimaRevision: "Ayer",
+                    color: Colors.amber,
+                  ),
+                  _construirTarjetaColmena(
+                    context: context,
+                    numero: "Colmena #3",
+                    estado: "Problema detectado",
+                    ultimaRevision: "Hace 10 días",
+                    color: Colors.red,
+                  ),
+                  _construirTarjetaColmena(
+                    context: context,
+                    numero: "Colmena #4",
+                    estado: "Tratamiento activo",
+                    ultimaRevision: "Hoy",
+>>>>>>> 7974ced (se agregaron los apartados sobre el tratamiento y cosecha)
                     color: Colors.blue,
                   ),
                 ],
@@ -91,12 +123,12 @@ class ColmenasPage extends StatelessWidget {
       ),
 
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: 1,
         selectedItemColor: Colors.amber,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const DashboardPage()),
             );
@@ -116,44 +148,111 @@ class ColmenasPage extends StatelessWidget {
     );
   }
 
-  // ---------------------
-  // Widgets reutilizables
-  // ---------------------
 
-  Widget _buildFilterChip(String label, bool selected) {
+
+  void _mostrarOpcionesColmena(BuildContext contexto, String numeroColmena) {
+    showModalBottomSheet(
+      context: contexto,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.vaccines, color: Colors.blue),
+                title: const Text('Registrar Tratamiento/Alimentación'),
+                onTap: () => {
+                  Navigator.pop(bc),
+                  Navigator.push(contexto, MaterialPageRoute(
+                      builder: (_) => tratamiento(numeroColmena: numeroColmena)),
+                  ),
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.inventory_2_outlined, color: Colors.amber),
+                title: const Text('Registrar Cosecha/Producción'),
+                onTap: () => {
+                  Navigator.pop(bc),
+                  Navigator.push(contexto, MaterialPageRoute(
+                      builder: (_) => cosecha(numeroColmena: numeroColmena)),
+                  ),
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Ver Histórico Completo'),
+                onTap: () => Navigator.pop(bc),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _construirFiltroChip(String etiqueta, bool seleccionado) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: null, // disabled (sin funcionalidad)
+        label: Text(etiqueta),
+        selected: seleccionado,
+        onSelected: (val) {},
         selectedColor: Colors.blue[600],
         backgroundColor: Colors.white,
         labelStyle: TextStyle(
-          color: selected ? Colors.white : Colors.black87,
+          color: seleccionado ? Colors.white : Colors.black87,
         ),
       ),
     );
   }
 
+<<<<<<< HEAD
   Widget _buildHiveCard(
     BuildContext context, {
     required String number,
     required String status,
     required String lastReview,
+=======
+  Widget _construirTarjetaColmena({
+    required String numero,
+    required String estado,
+    required String ultimaRevision,
+>>>>>>> 7974ced (se agregaron los apartados sobre el tratamiento y cosecha)
     required Color color,
+    required BuildContext context,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 1,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: color.withOpacity(0.2),
-          child: Icon(Icons.hive, color: color, size: 26),
+      child: InkWell(
+        onTap: () {
+          _mostrarOpcionesColmena(context, numero);
+        },
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(16),
+          leading: CircleAvatar(
+            radius: 24,
+            backgroundColor: color.withOpacity(0.2),
+            child: Icon(Icons.hive, color: color, size: 26),
+          ),
+          title: Text(
+            numero,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(estado, style: TextStyle(color: color, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 4),
+              Text(
+                "Última revisión: $ultimaRevision",
+                style: const TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+            ],
+          ),
+          trailing: const Icon(Icons.chevron_right),
         ),
+<<<<<<< HEAD
         title: Text(
           number,
           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
@@ -182,6 +281,8 @@ class ColmenasPage extends StatelessWidget {
             ),
           );
         },
+=======
+>>>>>>> 7974ced (se agregaron los apartados sobre el tratamiento y cosecha)
       ),
     );
   }

@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/MorganApp.iml" filepath="$PROJECT_DIR$/.idea/MorganApp.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/MorganApp.iml" filepath="$PROJECT_DIR$/MorganApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/abejajaja/abejajaja.iml" filepath="$PROJECT_DIR$/abejajaja/abejajaja.iml" />
+      <module fileurl="file://$PROJECT_DIR$/abejajaja/android/app/src/debug/debug.iml" filepath="$PROJECT_DIR$/abejajaja/android/app/src/debug/debug.iml" />
+      <module fileurl="file://$PROJECT_DIR$/abejajaja/android/app/src/profile/profile.iml" filepath="$PROJECT_DIR$/abejajaja/android/app/src/profile/profile.iml" />
+>>>>>>> 7974ced (se agregaron los apartados sobre el tratamiento y cosecha)
     </modules>
   </component>
 </project>

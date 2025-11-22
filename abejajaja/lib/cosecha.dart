@@ -11,6 +11,7 @@ class cosecha extends StatelessWidget {
         title: Text("Cosecha en $numeroColmena", style: const TextStyle(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:abejajaja/colmenas.dart';
-import 'package:abejajaja/tratamiento.dart';
 import 'dart:math' as math;
 
-
+// ----------------------------------------------------------------------
+// WIDGET AUXILIAR: HexagonPainter (para la gráfica de producción)
+// ----------------------------------------------------------------------
 class HexagonPainter extends CustomPainter {
   final Color color;
   final Color borderColor;
@@ -23,9 +24,9 @@ class HexagonPainter extends CustomPainter {
     final double centerX = size.width / 2;
     final double centerY = size.height / 2;
 
-
+    // Calcula los 6 puntos del hexágono
     final List<Offset> points = List.generate(6, (index) {
-      final double angle = math.pi / 3 * index + math.pi / 6; // +pi/6 para que una cara sea horizontal
+      final double angle = math.pi / 3 * index + math.pi / 6;
       return Offset(
         centerX + radius * math.cos(angle),
         centerY + radius * math.sin(angle),
@@ -34,16 +35,16 @@ class HexagonPainter extends CustomPainter {
 
     final Path path = Path()..addPolygon(points, true);
 
-
+    // Dibuja las sombras primero
     for (final shadow in boxShadows) {
       canvas.drawShadow(path, shadow.color, shadow.blurRadius, false);
     }
 
-
+    // Dibuja el relleno
     final Paint fillPaint = Paint()..color = color;
     canvas.drawPath(path, fillPaint);
 
-
+    // Dibuja el borde
     final Paint borderPaint = Paint()
       ..color = borderColor
       ..style = PaintingStyle.stroke
@@ -57,7 +58,9 @@ class HexagonPainter extends CustomPainter {
   }
 }
 
-
+// ----------------------------------------------------------------------
+// CLASE PRINCIPAL: DASHBOARDPAGE
+// ----------------------------------------------------------------------
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
@@ -104,10 +107,11 @@ class DashboardPage extends StatelessWidget {
 
             Row(
               children: [
+                // CAMBIO: Se ajusta esta tarjeta
                 Expanded(child: _construirTarjetaDashboard(
-                  icon: Icons.medical_services_outlined,
-                  title: "Tratamientos",
-                  value: "2 urgentes",
+                  icon: Icons.check_circle_outline,
+                  title: "Colmenas Saludables",
+                  value: "22 colmenas",
                 )),
                 const SizedBox(width: 12),
                 Expanded(child: _construirTarjetaDashboard(
@@ -120,9 +124,48 @@ class DashboardPage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // ---- Alertas y Recordatorios ----
+            // ------------------------------------------
+            // ---- CALENDARIO / AGENDA VISUAL ----
+            // ------------------------------------------
             const Text(
-              "Alertas y Recordatorios",
+              "🗓️ Agenda y Próximas Tareas",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+
+            Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _construirItemAgenda(
+                      date: "Lun, 24 Jun",
+                      task: "Revisión Sanitaria",
+                      colmena: "#5, #7, #15",
+                      color: Colors.blue,
+                    ),
+                    const Divider(height: 1, color: Colors.black12),
+                    // Tarea de Tratamiento ELIMINADA
+                    _construirItemAgenda(
+                      date: "Jue, 27 Jun",
+                      task: "Alimentación (Sirope)",
+                      colmena: "Apiario Norte",
+                      color: Colors.amber,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+            // ------------------------------------------
+
+            // ---- Alertas y Recordatorios URGENTES ----
+            const Text(
+              "⚠️ Alertas URGENTES",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
@@ -133,13 +176,6 @@ class DashboardPage extends StatelessWidget {
               time: "hace 3 días",
               color: Colors.red[100],
               iconColor: Colors.red,
-            ),
-            _construirItemAlerta(
-              icon: Icons.calendar_month_outlined,
-              text: "**Colmena #5** tratamiento [Ácido fórmico] mañana",
-              time: "Programado",
-              color: Colors.amber[100],
-              iconColor: Colors.amber[800],
             ),
             _construirItemAlerta(
               icon: Icons.restaurant_outlined,
@@ -153,7 +189,7 @@ class DashboardPage extends StatelessWidget {
 
             Center(
               child: Text(
-                "Ver todas las alertas",
+                "Ver todos los eventos y alarmas",
                 style: TextStyle(
                   color: Colors.blue[700],
                   fontSize: 15,
@@ -164,7 +200,7 @@ class DashboardPage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // ---- Gráfica de Panal de Productos  ----
+            // ---- Gráfica de Panal de Productos (Horizontal con Interlock) ----
             const Text(
               "Métricas Clave de Producción (Última Cosecha)",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -177,7 +213,7 @@ class DashboardPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
                 height: 180,
                 alignment: Alignment.center,
-                child: _construirGraficaPanalInterconectado(), // <-- GRÁFICA CON HEXÁGONOS
+                child: _construirGraficaPanalInterconectado(),
               ),
             ),
 
@@ -185,15 +221,11 @@ class DashboardPage extends StatelessWidget {
 
             // ---- Acciones Rápidas ----
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround, // Ajuste para 2 botones
               children: [
                 _construirBotonAccion(Icons.add, "Agregar\nColmena", () {}),
                 _construirBotonAccion(Icons.checklist, "Registrar\nRevisión", () {}),
-                _construirBotonAccion(Icons.vaccines, "Registrar\nTratamiento", () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const tratamiento(numeroColmena: "Seleccionar Colmena"),
-                  ));
-                }),
+                // Botón de Tratamiento ELIMINADO
               ],
             ),
             const SizedBox(height: 30),
@@ -229,7 +261,9 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-
+  // -------------------
+  // Widgets reutilizables
+  // -------------------
 
   Widget _construirTarjetaDashboard({required IconData icon, required String title, required String value}) {
     return Card(
@@ -247,6 +281,48 @@ class DashboardPage extends StatelessWidget {
             Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           ],
         ),
+      ),
+    );
+  }
+
+  // Widget para ítems de la Agenda / Calendario
+  Widget _construirItemAgenda({
+    required String date,
+    required String task,
+    required String colmena,
+    required Color color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 50,
+            alignment: Alignment.center,
+            child: Text(
+              date.split(',').first, // Día de la semana
+              style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  task,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                ),
+                Text(
+                  "$colmena · ${date.split(',').last.trim()}", // Colmenas y fecha
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        ],
       ),
     );
   }
@@ -282,13 +358,13 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // FUNCIÓN DE GRÁFICA DE PANAL DE PRODUCTOS
+  // FUNCIÓN DE GRÁFICA DE PANAL DE PRODUCTOS (Horizontal con Interlock)
   Widget _construirGraficaPanalInterconectado() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // MIEL
+        // MIEL (Posición normal)
         Expanded(
           child: Center(
             child: _construirHexagonoConContenido(
@@ -300,11 +376,11 @@ class DashboardPage extends StatelessWidget {
             ),
           ),
         ),
-        // POLEN
+        // POLEN (Desplazado hacia abajo para el efecto de interlock)
         Expanded(
-          child: Center(
-            child: Transform.translate(
-              offset: const Offset(0, 15),
+          child: Transform.translate(
+            offset: const Offset(0, 15),
+            child: Center(
               child: _construirHexagonoConContenido(
                 color: Colors.lightGreen.shade600,
                 icon: Icons.spa_outlined,
@@ -315,7 +391,7 @@ class DashboardPage extends StatelessWidget {
             ),
           ),
         ),
-        // CERA
+        // CERA (Posición normal)
         Expanded(
           child: Center(
             child: _construirHexagonoConContenido(
@@ -331,7 +407,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  // Widget auxiliar para construir cada hexágono
+  // Widget auxiliar para construir cada hexágono con su contenido (usa CustomPainter)
   Widget _construirHexagonoConContenido({
     required Color color,
     required IconData icon,
@@ -339,7 +415,6 @@ class DashboardPage extends StatelessWidget {
     required String labelText,
     required double size,
   }) {
-
     final List<BoxShadow> shadows = [
       BoxShadow(
         color: Colors.black.withOpacity(0.2),
